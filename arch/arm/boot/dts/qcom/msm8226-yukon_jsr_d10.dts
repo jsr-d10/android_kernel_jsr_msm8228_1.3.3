@@ -1,0 +1,84 @@
+/* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/dts-v1/;
+#include "msm8226-v2.dtsi"
+#include "msm8226-memory.dtsi"
+#include "msm8226-qseecom.dtsi"
+#include "msm8226-sharedmem.dtsi"
+#include "msm8226-yukon_jsr_d10.dtsi"
+#include "msm8226-yukon_jsr_d10-camera-sensor.dtsi"
+
+/ {
+	model = "Qualcomm MSM 8226v2 QRD";
+	compatible = "qcom,msm8226-qrd", "qcom,msm8226", "qcom,qrd", "jsr,d10";
+	qcom,board-id = <11 0>;
+};
+
+&modem_mem {
+	status = "disabled";
+};
+
+&peripheral_mem {
+	status = "disabled";
+};
+
+&qsecom_mem {
+	linux,memory-limit = <0x0>;
+};
+
+&mdss_dsi0 {
+	qcom,dsi-pref-prim-pan = <&dsi_nt35590_720_cmi_vid>;
+	qcom,platform-enable-gpio = <&msmgpio 23 0>;
+};
+
+&slim_msm {
+	tapan_codec {
+		qcom,cdc-micbias1-ext-cap;
+		qcom,cdc-micbias3-ext-cap;
+	};
+};
+
+&soc {
+	/delete-node/ vol_down;
+	/delete-node/ qcom,ispif@fda0A000;
+	/delete-node/ qcom,vfe@fda14000;
+
+	gpio_keys {
+		/delete-node/ camera_focus;
+		/delete-node/ camera_snapshot;
+		/delete-node/ vol_down;
+
+		function_key {
+			label = "function";
+			gpios = <&msmgpio 107 0x1>;
+			linux,input-type = <1>;
+			linux,code = <249>;
+			gpio-key,wakeup;
+			debounce-interval = <15>;
+		};
+
+		vol_up {
+			label = "volume_up";
+			gpios = <&msmgpio 106 0x1>;
+			linux,input-type = <1>;
+			linux,code = <115>;
+			gpio-key,wakeup;
+			debounce-interval = <15>;
+		};
+	};
+};
+
+&mdss_mdp {
+	/delete-node/ qcom,mdss_dsi_sim_video;
+	/delete-node/ qcom,mdss_dsi_sim_cmd;
+};
