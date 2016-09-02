@@ -461,7 +461,7 @@
                };
        };
 
-       qcom,avtimer {
+       qcom,avtimer@fe053000 {
                compatible = "qcom,avtimer";
                reg = <0xfe053008 0x4>,
                        <0xfe05300c 0x4>;
