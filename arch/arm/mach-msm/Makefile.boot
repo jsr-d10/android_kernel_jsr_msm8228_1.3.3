@@ -15,6 +15,7 @@
 
 # MSM8226
    zreladdr-$(CONFIG_ARCH_MSM8226)	:= 0x00008000
+	dtb-$(CONFIG_ARCH_MSM8226)	+= msm8226-yukon_jsr_d10.dtb
 	dtb-$(CONFIG_MACH_SONY_EAGLE)   += msm8226-yukon_eagle-720p-mtp.dtb
 	dtb-$(CONFIG_MACH_SONY_EAGLE)	+= msm8926-yukon_eagle-720p-mtp.dtb
 	dtb-$(CONFIG_MACH_SONY_FLAMINGO)+= msm8926-yukon_flamingo-8926ss_ap.dtb

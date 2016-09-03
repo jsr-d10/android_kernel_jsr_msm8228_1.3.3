@@ -44,6 +44,7 @@ dtb-$(CONFIG_MACH_SONY_TOGARI_ROW)	+= msm8974-v2.2-rhine_togari_row.dtb
 dtb-$(CONFIG_MACH_SONY_AMAMI_ROW)	+= msm8974-v2.2-rhine_amami_row.dtb
 
 # MSM8226
+dtb-$(CONFIG_ARCH_MSM8226)	+= msm8226-yukon_jsr_d10.dtb
 dtb-$(CONFIG_MACH_SONY_EAGLE)	+= msm8226-yukon_eagle-720p-mtp.dtb
 dtb-$(CONFIG_MACH_SONY_EAGLE)	+= msm8926-yukon_eagle-720p-mtp.dtb
 dtb-$(CONFIG_MACH_SONY_FLAMINGO)+= msm8926-yukon_flamingo-8926ss_ap.dtb
