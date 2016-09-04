@@ -51,6 +51,9 @@ dtb-$(CONFIG_MACH_SONY_TIANCHI) += msm8926-yukon_tianchi.dtb
 dtb-$(CONFIG_MACH_SONY_TIANCHI) += msm8226-yukon_tianchi_dsds.dtb
 dtb-$(CONFIG_MACH_SONY_SEAGULL) += msm8926-yukon_seagull-720p-mtp.dtb
 
+# MSM8226 JSR
+dtb-$(CONFIG_BOARD_JSR_D10A) += msm8226-yukon_jsr_d10.dtb
+
 # Other
 dtb-$(CONFIG_ARCH_MSM8909) += msm8909-sim.dtb \
 	msm8909-rumi.dtb \
