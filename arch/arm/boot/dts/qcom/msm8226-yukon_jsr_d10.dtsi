@@ -263,3 +263,4 @@
 	chan@30 {
 		qcom,hw-settle-time = <0xF>;
 	};
+};
