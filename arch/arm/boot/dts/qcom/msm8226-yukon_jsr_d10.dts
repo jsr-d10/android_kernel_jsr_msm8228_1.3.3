@@ -45,6 +45,10 @@
 	qcom,platform-enable-gpio = <&msmgpio 23 0>;
 };
 
+&mdss_fb0 {
+	qcom,memblock-reserve = <0x03200000 0xFA0000>;
+};
+
 &slim_msm {
 	tapan_codec {
 		qcom,cdc-micbias1-ext-cap;
