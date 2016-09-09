@@ -166,11 +166,31 @@
 
 &spmi_bus {
 	qcom,pm8226@1 {
+		qcom,leds@d300 {
+			status = "okay";
+		};
 		qcom,leds@d800 {
-			status = "disabled";
+			status = "okay";
+			qcom,wled_0 {
+				label = "wled";
+				linux,name = "wled:backlight";
+				linux,default-trigger = "bkl-trigger";
+				qcom,cs-out-en;
+				qcom,op-fdbck = <1>;
+				qcom,default-state = "on";
+				qcom,max-current = <20>;
+				qcom,ctrl-delay-us = <0>;
+				qcom,boost-curr-lim = <3>;
+				qcom,cp-sel = <0>;
+				qcom,switch-freq = <11>;
+				qcom,ovp-val = <0>;
+				qcom,num-strings = <1>;
+				qcom,id = <0>;
+			};
 		};
 		qcom,vibrator@c000 {
-			qcom,vib-vtg-level-mV = <3000>;
+			qcom,vib-timeout-ms = <15000>;
+			qcom,vib-vtg-level-mV = <3100>;
 		};
 	};
 };
