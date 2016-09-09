@@ -22,6 +22,9 @@
 	dtb-$(CONFIG_MACH_SONY_TIANCHI) += msm8926-yukon_tianchi.dtb
 	dtb-$(CONFIG_MACH_SONY_SEAGULL) += msm8926-yukon_seagull-720p-mtp.dtb
 
+# MSM8226 JSR
+	dtb-$(CONFIG_BOARD_JSR_D10A) += msm8226-yukon_jsr_d10.dtb
+
 # FSM9900
    zreladdr-$(CONFIG_ARCH_FSM9900)	:= 0x0b608000
 
