@@ -46,6 +46,10 @@
 #include <linux/irq_work.h>
 #include <linux/utsname.h>
 
+#ifdef CONFIG_LLCON
+#include <video/llcon.h>
+#endif
+
 #include <asm/uaccess.h>
 
 #define CREATE_TRACE_POINTS
@@ -406,6 +410,11 @@ static void log_oops_store(struct log *msg)
 }
 #endif
 
+#ifdef CONFIG_LLCON
+static size_t msg_print_text(const struct log *msg, enum log_flags prev,
+                             bool syslog, char *buf, size_t size);
+#endif
+
 /* insert record into the buffer, discard old ones, update heads */
 static void log_store(int facility, int level,
 		      enum log_flags flags, u64 ts_nsec,
@@ -466,6 +475,18 @@ static void log_store(int facility, int level,
 		msg->ts_nsec = local_clock();
 	memset(log_dict(msg) + dict_len, 0, pad_len);
 	msg->len = sizeof(struct log) + text_len + dict_len + pad_len;
+
+#ifdef CONFIG_LLCON
+	if (llcon_enabled || llcon_dumplog) {
+		static char llcon_buf[LOG_LINE_MAX + PREFIX_MAX + 32];
+		static enum log_flags llcon_prev = 0;
+		size_t mlen;
+		mlen = msg_print_text(msg, llcon_prev, true, llcon_buf, sizeof(llcon_buf));
+		if (mlen > 0)
+			llcon_emit_log_line(llcon_buf, mlen);
+		llcon_prev = msg->flags;
+	}
+#endif
 
 	/* insert message */
 	log_next_idx += msg->len;
