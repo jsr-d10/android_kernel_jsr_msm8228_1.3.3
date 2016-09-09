@@ -36,6 +36,10 @@
 	linux,memory-limit = <0x0>;
 };
 
+&clock_gcc {
+	compatible = "qcom,gcc-8226-v2";
+};
+
 &mdss_dsi0 {
 	qcom,dsi-pref-prim-pan = <&dsi_nt35590_720_cmi_vid>;
 	qcom,platform-enable-gpio = <&msmgpio 23 0>;
