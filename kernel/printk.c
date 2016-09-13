@@ -479,12 +479,12 @@ static void log_store(int facility, int level,
 #ifdef CONFIG_LLCON
 	if (llcon_enabled || llcon_dumplog) {
 		static char llcon_buf[LOG_LINE_MAX + PREFIX_MAX + 32];
-		static enum log_flags llcon_prev = 0;
 		size_t mlen;
-		mlen = msg_print_text(msg, llcon_prev, true, llcon_buf, sizeof(llcon_buf));
+		msg->flags = LOG_NEWLINE | LOG_PREFIX;
+		mlen = msg_print_text(msg, 0, true, llcon_buf, sizeof(llcon_buf));
 		if (mlen > 0)
 			llcon_emit_log_line(llcon_buf, mlen);
-		llcon_prev = msg->flags;
+		msg->flags = flags & 0x1f;
 	}
 #endif
 
