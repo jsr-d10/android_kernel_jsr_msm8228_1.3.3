@@ -216,6 +216,7 @@ struct log {
 	u8 facility;		/* syslog facility */
 	u8 flags:5;		/* internal record flags */
 	u8 level:3;		/* syslog level */
+	u32 cpuid;
 #if defined(CONFIG_LOG_BUF_MAGIC)
 	u32 magic;		/* handle for ramdump analysis tools */
 #endif
@@ -390,6 +391,7 @@ static void log_oops_store(struct log *msg)
 			msg->level = default_message_loglevel & 7;
 			msg->flags = (LOG_NEWLINE | LOG_PREFIX) & 0x1f;
 			msg->ts_nsec = ts_nsec;
+			msg->cpuid = 99;
 			eom = 1;
 		}
 
@@ -423,6 +425,13 @@ static void log_store(int facility, int level,
 {
 	struct log *msg;
 	u32 size, pad_len;
+	u32 cpuid = logbuf_cpu;
+
+	if (dict == (const char *)1) {
+		cpuid = dict_len;
+		dict = NULL;
+		dict_len = 0;
+	}
 
 	/* number of '\0' padding bytes to next message */
 	size = sizeof(struct log) + text_len + dict_len;
@@ -465,6 +474,7 @@ static void log_store(int facility, int level,
 	msg->text_len = text_len;
 	memcpy(log_dict(msg), dict, dict_len);
 	msg->dict_len = dict_len;
+	msg->cpuid = cpuid;
 	msg->facility = facility;
 	msg->level = level & 7;
 	msg->flags = flags & 0x1f;
@@ -1042,7 +1052,7 @@ static bool printk_time;
 #endif
 module_param_named(time, printk_time, bool, S_IRUGO | S_IWUSR);
 
-static size_t print_time(u64 ts, char *buf)
+static size_t print_time(u64 ts, u32 cpuid, char *buf)
 {
 	unsigned long rem_nsec;
 
@@ -1052,10 +1062,10 @@ static size_t print_time(u64 ts, char *buf)
 	rem_nsec = do_div(ts, 1000000000);
 
 	if (!buf)
-		return snprintf(NULL, 0, "[%5lu.000000] ", (unsigned long)ts);
+		return snprintf(NULL, 0, "[%5lu.000000,00] ", (unsigned long)ts);
 
-	return sprintf(buf, "[%5lu.%06lu] ",
-		       (unsigned long)ts, rem_nsec / 1000);
+	return sprintf(buf, "[%5lu.%06lu,%2d] ",
+		       (unsigned long)ts, rem_nsec / 1000, (int)cpuid);
 }
 
 static size_t print_prefix(const struct log *msg, bool syslog, char *buf)
@@ -1077,7 +1087,7 @@ static size_t print_prefix(const struct log *msg, bool syslog, char *buf)
 		}
 	}
 
-	len += print_time(msg->ts_nsec, buf ? buf + len : NULL);
+	len += print_time(msg->ts_nsec, msg->cpuid, buf ? buf + len : NULL);
 	return len;
 }
 
@@ -1714,6 +1724,7 @@ static struct cont {
 	u8 facility;			/* log level of first message */
 	enum log_flags flags;		/* prefix, newline flags */
 	bool flushed:1;			/* buffer sealed and committed */
+	u32 cpuid;
 } cont;
 
 static void cont_flush(enum log_flags flags)
@@ -1730,7 +1741,7 @@ static void cont_flush(enum log_flags flags)
 		 * line. LOG_NOCONS suppresses a duplicated output.
 		 */
 		log_store(cont.facility, cont.level, flags | LOG_NOCONS,
-			  cont.ts_nsec, NULL, 0, cont.buf, cont.len);
+			  cont.ts_nsec, (char *)1, (u16)cont.cpuid, cont.buf, cont.len);
 		cont.flags = flags;
 		cont.flushed = true;
 	} else {
@@ -1739,7 +1750,7 @@ static void cont_flush(enum log_flags flags)
 		 * just submit it to the store and free the buffer.
 		 */
 		log_store(cont.facility, cont.level, flags, 0,
-			  NULL, 0, cont.buf, cont.len);
+			  (char *)1, (u16)cont.cpuid, cont.buf, cont.len);
 		cont.len = 0;
 	}
 }
@@ -1763,6 +1774,7 @@ static bool cont_add(int facility, int level, const char *text, size_t len)
 		cont.flags = 0;
 		cont.cons = 0;
 		cont.flushed = false;
+		cont.cpuid = logbuf_cpu;
 	}
 
 	memcpy(cont.buf + cont.len, text, len);
@@ -1780,7 +1792,7 @@ static size_t cont_print_text(char *text, size_t size)
 	size_t len;
 
 	if (cont.cons == 0 && (console_prev & LOG_NEWLINE)) {
-		textlen += print_time(cont.ts_nsec, text);
+		textlen += print_time(cont.ts_nsec, cont.cpuid, text);
 		size -= textlen;
 	}
 
