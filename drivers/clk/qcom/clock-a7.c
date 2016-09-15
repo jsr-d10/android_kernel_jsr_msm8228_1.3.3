@@ -36,6 +36,7 @@ DEFINE_VDD_REGS_INIT(vdd_cpu, 1);
 
 static struct mux_div_clk a7ssmux = {
 	.ops = &rcg_mux_div_ops,
+	.en_mask = BIT(6),
 	.safe_freq = 300000000,
 	.data = {
 		.max_div = 32,
